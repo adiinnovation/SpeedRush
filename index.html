@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Speed Rush - Fast-paced 2D arcade highway car racing game built with HTML5 Canvas, CSS3, and Vanilla JavaScript.">
+  <meta name="theme-color" content="#0c0d10">
+  <link rel="icon" type="image/svg+xml" href="assets/images/car-icon.svg">
+  <title>Speed Rush - 2D Car Racing Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Main Game Wrapper -->
+  <div id="game-app">
+    
+    <!-- Game Container with Canvas and Overlays -->
+    <div id="game-container">
+      
+      <!-- Top Arcade HUD -->
+      <header id="game-hud">
+        <div class="hud-item hud-score">
+          <span class="hud-label">SCORE</span>
+          <span id="score-display" class="hud-value">0</span>
+        </div>
+
+        <div class="hud-item hud-speedometer">
+          <span class="hud-label">SPEED</span>
+          <div class="speed-gauge-wrap">
+            <span id="speed-display" class="hud-value">0</span>
+            <span class="hud-unit">KM/H</span>
+          </div>
+          <div class="speed-bar-container">
+            <div id="speed-bar" class="speed-bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="hud-item hud-coins">
+          <span class="hud-label">COINS</span>
+          <div class="coin-badge">
+            <span class="coin-icon">&#9733;</span>
+            <span id="coins-display" class="hud-value">0</span>
+          </div>
+        </div>
+
+        <div class="hud-item hud-best">
+          <span class="hud-label">BEST</span>
+          <span id="best-display" class="hud-value">0</span>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="hud-actions">
+          <button id="btn-sound-toggle" class="icon-btn" title="Toggle Sound (M)" aria-label="Toggle Sound">
+            <span id="sound-icon" class="btn-icon">&#128266;</span>
+          </button>
+          <button id="btn-pause-toggle" class="icon-btn" title="Pause Game (P)" aria-label="Pause Game">
+            <span id="pause-icon" class="btn-icon">&#10074;&#10074;</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- The 2D Racing Canvas -->
+      <canvas id="game-canvas"></canvas>
+
+      <!-- Milestone / Level Up Notification Banner -->
+      <div id="announcement-banner" class="announcement-banner">
+        <span id="announcement-text">SPEED UP!</span>
+      </div>
+
+      <!-- Start Screen Overlay -->
+      <div id="start-screen" class="screen-overlay active">
+        <div class="screen-card">
+          <div class="logo-group">
+            <div class="racing-badge">ARCADE HIGHWAY RACER</div>
+            <h1 class="game-title">SPEED <span class="highlight">RUSH</span></h1>
+            <p class="game-tagline">Dodge Traffic &bull; Collect Coins &bull; Rule the Asphalt</p>
+          </div>
+
+          <div class="car-customizer">
+            <span class="customizer-title">SELECT YOUR RACER</span>
+            <div class="color-options">
+              <button class="color-chip active" data-color="#ff1e42" style="--chip-color: #ff1e42;" title="Crimson Red"></button>
+              <button class="color-chip" data-color="#00d2ff" style="--chip-color: #00d2ff;" title="Electric Cyan"></button>
+              <button class="color-chip" data-color="#00ff88" style="--chip-color: #00ff88;" title="Neon Green"></button>
+              <button class="color-chip" data-color="#ffb800" style="--chip-color: #ffb800;" title="Sunset Gold"></button>
+              <button class="color-chip" data-color="#bf00ff" style="--chip-color: #bf00ff;" title="Hyper Violet"></button>
+            </div>
+          </div>
+
+          <div class="instructions-card">
+            <div class="control-hints">
+              <div class="hint-item">
+                <span class="key-badge">&#8592; / A</span>
+                <span class="hint-label">Steer Left</span>
+              </div>
+              <div class="hint-item">
+                <span class="key-badge">&#8594; / D</span>
+                <span class="hint-label">Steer Right</span>
+              </div>
+              <div class="hint-item">
+                <span class="key-badge">SPACE</span>
+                <span class="hint-label">Start / Restart</span>
+              </div>
+              <div class="hint-item">
+                <span class="key-badge">P</span>
+                <span class="hint-label">Pause Game</span>
+              </div>
+            </div>
+            <p class="mobile-hint-text">Mobile: Use on-screen touch buttons below</p>
+          </div>
+
+          <div class="screen-stats">
+            <span>HIGH SCORE: <strong id="start-best-score">0</strong></span>
+          </div>
+
+          <button id="btn-play" class="btn btn-primary btn-glow">
+            <span>PLAY NOW</span>
+            <span class="btn-arrow">&#9654;</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pause Screen Overlay -->
+      <div id="pause-screen" class="screen-overlay">
+        <div class="screen-card">
+          <div class="racing-badge">GAME PAUSED</div>
+          <h2 class="modal-title">PIT STOP</h2>
+          <p class="modal-desc">Take a breath, adjust your focus, and hit the gas.</p>
+
+          <div class="pause-stats">
+            <div class="pause-stat-box">
+              <span class="stat-label">CURRENT SCORE</span>
+              <span id="pause-score" class="stat-value">0</span>
+            </div>
+            <div class="pause-stat-box">
+              <span class="stat-label">COINS COLLECTED</span>
+              <span id="pause-coins" class="stat-value">0</span>
+            </div>
+          </div>
+
+          <div class="btn-group-vertical">
+            <button id="btn-resume" class="btn btn-primary btn-glow">
+              <span>RESUME RACE</span>
+              <span class="btn-arrow">&#9654;</span>
+            </button>
+            <button id="btn-restart-pause" class="btn btn-secondary">
+              <span>RESTART</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Screen Overlay -->
+      <div id="gameover-screen" class="screen-overlay">
+        <div class="screen-card">
+          <div class="crash-icon">&#128165;</div>
+          <h2 class="modal-title text-danger">CRASHED!</h2>
+          <div id="new-record-badge" class="new-record-badge hidden">&#127942; NEW BEST RECORD!</div>
+
+          <div class="results-grid">
+            <div class="result-box">
+              <span class="result-label">FINAL SCORE</span>
+              <span id="final-score" class="result-value">0</span>
+            </div>
+            <div class="result-box">
+              <span class="result-label">DISTANCE</span>
+              <span id="final-distance" class="result-value">0 m</span>
+            </div>
+            <div class="result-box">
+              <span class="result-label">COINS</span>
+              <span id="final-coins" class="result-value">0</span>
+            </div>
+            <div class="result-box">
+              <span class="result-label">BEST RECORD</span>
+              <span id="final-best" class="result-value">0</span>
+            </div>
+          </div>
+
+          <div class="btn-group-vertical">
+            <button id="btn-restart" class="btn btn-primary btn-glow">
+              <span>RACE AGAIN</span>
+              <span class="btn-arrow">&#8635;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- On-screen Mobile Controls -->
+      <div id="mobile-controls" class="mobile-controls">
+        <button id="btn-left" class="touch-btn touch-btn-left" aria-label="Steer Left">
+          <span class="touch-arrow">&#9664;</span>
+          <span class="touch-label">LEFT</span>
+        </button>
+        <button id="btn-right" class="touch-btn touch-btn-right" aria-label="Steer Right">
+          <span class="touch-label">RIGHT</span>
+          <span class="touch-arrow">&#9654;</span>
+        </button>
+      </div>
+
+    </div><!-- /#game-container -->
+
+    <!-- Desktop Footer Info -->
+    <footer class="app-footer">
+      <p>SPEED RUSH &bull; 2D Highway Racing &bull; Use &larr; &rarr; or A/D to steer &bull; Spacebar to start &bull; P to pause</p>
+    </footer>
+
+  </div><!-- /#game-app -->
+
+  <script src="script.js"></script>
+</body>
+</html>

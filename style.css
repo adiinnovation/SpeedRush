@@ -1,0 +1,744 @@
+/* ==========================================================================
+   SPEED RUSH - 2D CAR RACING GAME
+   Stylesheet: Modern Arcade Dark Racing Aesthetic
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+:root {
+  --bg-color: #0c0d10;
+  --bg-carbon: #14161b;
+  --road-color: #2a2c33;
+  --accent-cyan: #00f0ff;
+  --accent-neon-green: #00ff88;
+  --accent-orange: #ff6a00;
+  --accent-red: #ff1e42;
+  --accent-gold: #ffb800;
+  --text-primary: #ffffff;
+  --text-secondary: #9aa0a6;
+  --font-display: 'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Impact', sans-serif;
+  --font-ui: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --card-bg: rgba(18, 20, 26, 0.88);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --glass-glow: rgba(0, 240, 255, 0.15);
+  --btn-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+/* Base Reset & Lock Scroll */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Background Subtle Carbon Texture */
+body {
+  background-image: 
+    radial-gradient(circle at 50% 10%, rgba(0, 240, 255, 0.06) 0%, transparent 60%),
+    linear-gradient(135deg, #090a0d 25%, #101217 25%, #101217 50%, #090a0d 50%, #090a0d 75%, #101217 75%, #101217 100%);
+  background-size: 100% 100%, 20px 20px;
+}
+
+/* App Wrapper */
+#game-app {
+  width: 100%;
+  height: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 8px;
+}
+
+/* Main Responsive Game Viewport Frame */
+#game-container {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  height: 100%;
+  max-height: 800px;
+  aspect-ratio: 460 / 800;
+  background: var(--road-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 
+    0 0 0 2px rgba(255, 255, 255, 0.08),
+    0 15px 40px rgba(0, 0, 0, 0.7),
+    0 0 50px rgba(0, 240, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  touch-action: none;
+}
+
+/* Canvas Styling */
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* ==========================================================================
+   ARCADE HUD (Heads-Up Display)
+   ========================================================================== */
+#game-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(12, 14, 18, 0.94) 0%, rgba(12, 14, 18, 0.75) 75%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  pointer-events: auto;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hud-label {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.hud-value {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  line-height: 1.1;
+}
+
+/* Speedometer Section */
+.hud-speedometer {
+  align-items: center;
+}
+
+.speed-gauge-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+#speed-display {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+  font-size: 1.3rem;
+}
+
+.hud-unit {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.speed-bar-container {
+  width: 72px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.speed-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-neon-green), var(--accent-gold), var(--accent-red));
+  border-radius: 4px;
+  transition: width 0.15s ease-out;
+}
+
+/* Coin Badge */
+.coin-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coin-icon {
+  color: var(--accent-gold);
+  font-size: 0.9rem;
+  filter: drop-shadow(0 0 6px rgba(255, 184, 0, 0.8));
+  animation: coinGlow 2s infinite ease-in-out;
+}
+
+#coins-display {
+  color: var(--accent-gold);
+  text-shadow: 0 0 10px rgba(255, 184, 0, 0.5);
+}
+
+#best-display {
+  color: #ffde59;
+}
+
+/* Quick Action Buttons */
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.btn-icon {
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   POPUP ANNOUNCEMENT BANNER (SPEED UP / LEVEL UP)
+   ========================================================================== */
+.announcement-banner {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-30px);
+  background: linear-gradient(90deg, rgba(255, 106, 0, 0.9), rgba(255, 30, 66, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 25px rgba(255, 106, 0, 0.6);
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  z-index: 25;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.announcement-banner.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   OVERLAY SCREENS (START, PAUSE, GAMEOVER)
+   ========================================================================== */
+.screen-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 11, 15, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 30;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.screen-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.screen-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--glass-glow);
+  border-radius: 20px;
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: cardPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes cardPop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Racing Badge */
+.racing-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.game-title {
+  font-family: var(--font-display);
+  font-size: 2.3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  margin-bottom: 6px;
+}
+
+.game-title .highlight {
+  color: var(--accent-red);
+  text-shadow: 0 0 25px rgba(255, 30, 66, 0.7);
+}
+
+.game-tagline {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+
+/* Car Customizer (Color Selector) */
+.car-customizer {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.customizer-title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.color-options {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.color-chip {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--chip-color);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.color-chip:hover {
+  transform: scale(1.15);
+}
+
+.color-chip.active {
+  border-color: #ffffff;
+  transform: scale(1.2);
+  box-shadow: 0 0 14px var(--chip-color);
+}
+
+/* Instructions & Control Hints */
+.instructions-card {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.control-hints {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.hint-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key-badge {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--accent-cyan);
+  min-width: 42px;
+  text-align: center;
+}
+
+.hint-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.mobile-hint-text {
+  margin-top: 8px;
+  font-size: 0.72rem;
+  color: #7b8089;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 6px;
+}
+
+.screen-stats {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.screen-stats strong {
+  color: var(--accent-gold);
+}
+
+/* Modals Titles & Desc */
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.text-danger {
+  color: var(--accent-red);
+  text-shadow: 0 0 20px rgba(255, 30, 66, 0.6);
+}
+
+.modal-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.crash-icon {
+  font-size: 3rem;
+  margin-bottom: 4px;
+  animation: bounce 0.6s infinite alternate;
+}
+
+.new-record-badge {
+  background: linear-gradient(90deg, #ffd700, #ff8800);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  animation: pulseRecord 1.2s infinite ease-in-out;
+}
+
+.new-record-badge.hidden {
+  display: none;
+}
+
+/* Pause and Game Over Stats Grid */
+.pause-stats, .results-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.pause-stat-box, .result-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label, .result-label {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.stat-value, .result-value {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+#final-score {
+  color: var(--accent-neon-green);
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
+}
+
+#final-best {
+  color: var(--accent-gold);
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn-group-vertical {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-neon-green) 0%, #00cc6a 100%);
+  color: #0c0d10;
+  box-shadow: var(--btn-shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.7);
+  background: linear-gradient(135deg, #24ff9a 0%, #00e676 100%);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.btn-arrow {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-primary:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* ==========================================================================
+   MOBILE TOUCH CONTROLS
+   ========================================================================== */
+.mobile-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.touch-btn {
+  pointer-events: auto;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(18, 20, 26, 0.75);
+  border: 2px solid rgba(0, 240, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 240, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  transition: transform 0.1s ease, background 0.1s ease, border-color 0.1s ease;
+}
+
+.touch-btn:active, .touch-btn.active {
+  transform: scale(0.9);
+  background: rgba(0, 240, 255, 0.3);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+}
+
+.touch-arrow {
+  font-size: 1.4rem;
+  color: var(--accent-cyan);
+  line-height: 1;
+}
+
+.touch-label {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   FOOTER INFO (Desktop View)
+   ========================================================================== */
+.app-footer {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS
+   ========================================================================== */
+@keyframes coinGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 184, 0, 0.7)); }
+  50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 1)); }
+}
+
+@keyframes pulseRecord {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Tablets & Mobile Screens)
+   ========================================================================== */
+@media (max-width: 500px) {
+  #game-app {
+    padding: 0;
+  }
+
+  #game-container {
+    max-width: 100%;
+    max-height: 100vh;
+    aspect-ratio: auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .app-footer {
+    display: none;
+  }
+
+  .game-title {
+    font-size: 1.9rem;
+  }
+
+  .screen-card {
+    padding: 20px 16px;
+  }
+
+  .touch-btn {
+    width: 68px;
+    height: 68px;
+  }
+
+  .hud-value {
+    font-size: 1rem;
+  }
+
+  #speed-display {
+    font-size: 1.15rem;
+  }
+}
+
+@media (min-height: 800px) and (min-width: 501px) {
+  #game-container {
+    height: 85vh;
+  }
+}
